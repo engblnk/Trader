@@ -8,6 +8,6 @@ fill your apikeys on apikeys.py
 
 update your trade amount "self.units = 5" on Trader.py
 
-open seperate terminal & >>cutelog
+open seperate terminal and run cutelog (>cutelog)
 
-run Trader.py
+run Trader.py (>python Trader.py)
