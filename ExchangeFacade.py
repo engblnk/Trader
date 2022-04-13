@@ -33,9 +33,6 @@ class ExchangeFacade():
     def tick(self):
         df = self.exchangeObj.tick()
         return self.formatColumns(df)
-    
-    def cancel_all_open_orders(self):
-        print("calcel all")
 
     def formatColumns(self, df):
         df["Date"] = pd.to_datetime(df.iloc[:,0], unit = "ms")

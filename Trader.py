@@ -74,7 +74,9 @@ class FuturesTrader():
         self.prepared_data = data.copy()
         logStrategy = logging.getLogger('Trader.Strategy')
         logStrategy.info('price: ' + str(self.prepared_data.tail(1)['Close'][0])
-                         + ' EMA21: ' + str(self.roundPrice(self.prepared_data.tail(1)['EMA21'][0])))
+                         + ' EMA21: ' + str(format(self.roundPrice(self.prepared_data.tail(1)['EMA21'][0]), '.3f'))
+                         + ' EMA50: ' + str(format(self.roundPrice(self.prepared_data.tail(1)['EMA50'][0]), '.3f'))
+                         + ' position: ' + str(self.prepared_data.tail(1)['position'][0]))
 
     
     def execute_trades(self):
