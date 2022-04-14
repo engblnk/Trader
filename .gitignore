@@ -1,2 +1,6 @@
 .DS_Store
 apikeys.py
+__pycache__
+apikeys.py
+*.log
+apikeys.py

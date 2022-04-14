@@ -9,13 +9,13 @@ import pandas as pd
 #datefmt="%d/%m/%Y %I:%M:%S %p %Z",
 
 class FuturesTrader():
-    def __init__(self, exchangeName):
+    def __init__(self, exchangeName, unit):
 
         self.init_loggger()
 
         # create exchange Object
         self.exc = ExchangeFacade(exchangeName, leverage = 3)
-        self.units = 5
+        self.units = unit
         self.dataSize = 0
         self.pricePresicion = 3
     
@@ -37,14 +37,13 @@ class FuturesTrader():
 
     def threadedTick(self):
         while True:
-            self.logger.info("call ticker")
             self.new_bar = self.exc.tick()
 
             if self.new_bar.tail(1).index[0] in self.data.index:
                 self.data.loc[self.new_bar.tail(1).index] = self.new_bar
                 logStream = logging.getLogger('Trader.Stream')
                 logStream.info('time: ' + str(self.data.tail(1).index[0].hour) 
-                                    + ':' + str(self.data.tail(1).index[0].minute)
+                                    + ':' + str(self.data.tail(1).index[0].minute).zfill(2)
                                     + ' price: ' + str(self.data.tail(1)['Close'][0]))
             else:
                 self.data = pd.concat([self.data, self.new_bar])
@@ -73,10 +72,7 @@ class FuturesTrader():
         
         self.prepared_data = data.copy()
         logStrategy = logging.getLogger('Trader.Strategy')
-        logStrategy.info('price: ' + str(self.prepared_data.tail(1)['Close'][0])
-                         + ' EMA21: ' + str(format(self.roundPrice(self.prepared_data.tail(1)['EMA21'][0]), '.3f'))
-                         + ' EMA50: ' + str(format(self.roundPrice(self.prepared_data.tail(1)['EMA50'][0]), '.3f'))
-                         + ' position: ' + str(self.prepared_data.tail(1)['position'][0]))
+        logStrategy.info(self.prepared_data)
 
     
     def execute_trades(self):
@@ -103,12 +99,12 @@ class FuturesTrader():
 
         # INVEST
         if abs(self.positionAmt) < self.units:
-            response = self.exc.exchangeObj.limit_order(orderSide, self.units - abs(self.positionAmt), self.roundPrice(self.prepared_data["EMA21"].iloc[-1]))
-            self.logger.info(response)
+            self.exc.exchangeObj.limit_order(orderSide, self.units - abs(self.positionAmt), self.roundPrice(self.prepared_data["EMA21"].iloc[-1]))
 
     def roundPrice(self, price):
         return round(price, self.pricePresicion)
 
-#trader = FuturesTrader(exchangeName = "Binance")
-trader = FuturesTrader(exchangeName = "KuCoin")
+exchangeName = "KuCoin"
+unit = 50
+trader = FuturesTrader(exchangeName, unit)
 trader.start_trading()

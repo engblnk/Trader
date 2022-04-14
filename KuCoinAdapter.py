@@ -50,7 +50,7 @@ class KuCoinAdapter():
 
     def limit_order(self, side, amount, price):
         response = self.trade.create_limit_order(self.symbol, side.lower(), self.leverage, amount, price)
-        self.logger.info('limit buy order -> price: ' + str(price) + ' ' + str(response))
+        self.logger.info('limit ' + side + ' order -> price: ' + str(price) + ' ' + str(response))
 
     def market_order(self, side, amount):
         response = self.trade.create_market_order(self.symbol, side.lower(), self.leverage, amount)

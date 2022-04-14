@@ -16,3 +16,11 @@ class BinanceAdapter():
         df = pd.DataFrame(bars)
         df.drop(df.columns[[6,7,8,9,10,11]],axis=1,inplace=True)
         return df
+
+    def tick(self):
+        currHour = datetime.utcnow().replace(second=0, microsecond=0, minute=0)
+        latestBar = self.market.get_kline_data(symbol = self.symbol, granularity = 60)
+        self.logger.info(latestBar[-1]) # dirty syntax: list[-1] get the latest element of the array
+        df = pd.DataFrame(latestBar)
+        return df.tail(1)
+        
