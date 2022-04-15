@@ -37,23 +37,29 @@ class FuturesTrader():
 
     def threadedTick(self):
         while True:
-            self.new_bar = self.exc.tick()
 
-            if self.new_bar.tail(1).index[0] in self.data.index:
-                self.data.loc[self.new_bar.tail(1).index] = self.new_bar
-                logStream = logging.getLogger('Trader.Stream')
-                logStream.info('time: ' + str(self.data.tail(1).index[0].hour) 
-                                    + ':' + str(self.data.tail(1).index[0].minute).zfill(2)
-                                    + ' price: ' + str(self.data.tail(1)['Close'][0]))
-            else:
-                self.data = pd.concat([self.data, self.new_bar])
+            logStream = logging.getLogger('Trader.Stream')
 
-            if self.data.size > self.dataSize:
-                self.dataSize = self.data.size
-                self.define_strategy()
-                self.execute_trades()
+            try:
+                self.new_bar = self.exc.tick()
 
-            # sleep 10 min
+                if self.new_bar.tail(1).index[0] in self.data.index:
+                    self.data.loc[self.new_bar.tail(1).index] = self.new_bar
+                    logStream.info('time: ' + str(self.data.tail(1).index[0].hour) 
+                                        + ':' + str(self.data.tail(1).index[0].minute).zfill(2)
+                                        + ' price: ' + str(self.data.tail(1)['Close'][0]))
+                else:
+                    self.data = pd.concat([self.data, self.new_bar])
+
+                if self.data.size > self.dataSize:
+                    self.dataSize = self.data.size
+                    self.define_strategy()
+                    self.execute_trades()
+
+            except TimeoutError:
+                logStream.info('Tick timedout, No worries will try later.')
+
+            # sleep 30 sec
             time.sleep(30)
     
     def define_strategy(self):

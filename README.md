@@ -1,7 +1,7 @@
 # Trader
 
 pip install cutelog
-
+pip install python-binance
 pip install -e git+https://github.com/engblnk/kucoin-futures-python-sdk.git#egg=kucoin-futures-python
 
 fill your apikeys on apikeys.py
