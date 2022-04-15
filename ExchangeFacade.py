@@ -26,7 +26,7 @@ class ExchangeFacade():
 
     def get_historical(self):
         now = datetime.utcnow()
-        past = now - timedelta(days = 2)
+        past = now - timedelta(days = 3)
         df = self.exchangeObj.get_historical(starttime = past)
         return self.formatColumns(df)
 

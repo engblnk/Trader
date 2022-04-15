@@ -64,13 +64,13 @@ class FuturesTrader():
     
     def define_strategy(self):
         
-        data = self.data.tail(50).copy()
+        data = self.data.tail(55).copy()
         
         #******************** define your strategy here ************************
         data = data[["Close"]].copy()
         
         data['EMA21'] = data['Close'].ewm(span=21, min_periods=21, adjust=False).mean()
-        data['EMA50'] = data['Close'].ewm(span=50, min_periods=21, adjust=False).mean()
+        data['EMA50'] = data['Close'].ewm(span=50, min_periods=50, adjust=False).mean()
 
         data.loc[data.EMA21 > data.EMA50, "position"] = 1
         data.loc[data.EMA21 < data.EMA50, "position"] = -1
