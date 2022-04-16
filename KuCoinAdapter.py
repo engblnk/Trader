@@ -1,9 +1,12 @@
+from pickle import FALSE
 from kucoin_futures.client import Market, Trade
 # https://github.com/Kucoin/kucoin-futures-python-sdk
 # https://docs.kucoin.com/futures
 
 import pandas as pd
 from datetime import datetime
+
+import requests
 import apikeys
 import logging
 from logging.handlers import SocketHandler
@@ -29,11 +32,16 @@ class KuCoinAdapter():
         return df
 
     def tick(self):
-        currHour = datetime.utcnow().replace(second=0, microsecond=0, minute=0)
-        latestBar = self.market.get_kline_data(symbol = self.symbol, granularity = 60)
-        self.logger.info(latestBar[-1]) # dirty syntax: list[-1] get the latest element of the array
-        df = pd.DataFrame(latestBar)
-        return df.tail(1)
+        try:
+            currHour = datetime.utcnow().replace(second=0, microsecond=0, minute=0)
+            response = self.market.get_kline_data(symbol = self.symbol, granularity = 60)
+            self.logger.info(response[-1]) # dirty syntax: list[-1] get the latest element of the array
+            df = pd.DataFrame(response)
+            return df.tail(1)
+
+        except requests.exceptions.Timeout:
+            self.logger.warning('market.get_kline_data timed-out, No worries will try later.')
+            return response
     
     def timestamp(self, dt):
         epoch = datetime.utcfromtimestamp(0)
